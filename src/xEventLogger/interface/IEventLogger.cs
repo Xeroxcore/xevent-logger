@@ -11,5 +11,7 @@ namespace xEventLogger.Interface
         void LogEventAsync(Exception error, string fileName);
         Task<string> GetLogFileAsync(string fileName);
         string GetLogFile(string fileName);
+        void LogEvent<T>(T data, string fileName);
+        void LogEventAsync<T>(T data, string fileName);
     }
 }

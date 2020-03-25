@@ -7,8 +7,8 @@
     <Company>Xeroxcore</Company>
     <Title>xEventLogger</Title>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageDescription></PackageDescription>
-    <Summary></Summary>
+    <PackageDescription>An Event logger capable of logging text string or lists of objects as json</PackageDescription>
+    <Summary>A Easy to use Event logger utilizing json logging evetns</Summary>
     <PackageTags>logging</PackageTags>
     <Authors>Nasar Eddaoui</Authors>
     <Copyright>Copyright © Xeroxcore 2020</Copyright>
