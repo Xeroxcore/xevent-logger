@@ -21,6 +21,12 @@ namespace xEventLogger
             FileWriter = filewriter;
         }
 
+        private void Savefile(string text, string fileName, FileMode mode)
+        {
+            FileWriter.EnsureThatFilePathExists(directory, fileName);
+            FileWriter.AppendTextToFile(text, $"{directory}/{fileName}", mode);
+        }
+
         public void LogEvent(string text, string fileName)
         {
             if (Validation.StringIsNullOrEmpty(text))
@@ -29,8 +35,7 @@ namespace xEventLogger
             if (Validation.StringIsNullOrEmpty(fileName))
                 throw new Exception("Give text path is empty or null");
 
-            FileWriter.EnsureThatFilePathExists(directory, fileName);
-            FileWriter.AppendTextToFile(text, $"{directory}/{fileName}", FileMode.Append);
+            Savefile(text, fileName, FileMode.Append);
         }
 
         public async void LogEventAsync(string text, string fileName)
@@ -38,6 +43,7 @@ namespace xEventLogger
 
         private string AppendEventToLog<T>(T data, string fileName)
         {
+            FileWriter.EnsureThatFilePathExists(directory, fileName);
             var log = JsonConvert.DeserializeObject<List<T>>(GetLogFile(fileName));
             var list = new List<T>();
             if (log != null)
@@ -53,11 +59,11 @@ namespace xEventLogger
 
             if (Validation.StringIsNullOrEmpty(fileName))
                 throw new Exception("Give text path is empty or null");
-            var exception = new ExceptionHelper(error);
 
-            FileWriter.EnsureThatFilePathExists(directory, fileName);
-            var json = AppendEventToLog<Error>((Error)exception.GetFormatedErrorObject(), fileName);
-            FileWriter.AppendTextToFile(json, $"{directory}/{fileName}", FileMode.Truncate);
+            var exception = new ExceptionHelper(error);
+            var formatedError = (Error)exception.GetFormatedErrorObject();
+            var json = AppendEventToLog(formatedError, fileName);
+            Savefile(json, fileName, FileMode.Truncate);
         }
 
         public async void LogEventAsync(Exception error, string fileName)
@@ -71,9 +77,8 @@ namespace xEventLogger
             if (Validation.StringIsNullOrEmpty(fileName))
                 throw new Exception("Give text path is empty or null");
 
-            FileWriter.EnsureThatFilePathExists(directory, fileName);
             var json = AppendEventToLog(data, fileName);
-            FileWriter.AppendTextToFile(json, $"{directory}/{fileName}", FileMode.Truncate);
+            Savefile(json, fileName, FileMode.Truncate);
         }
 
         public async void LogEventAsync<T>(T data, string fileName)
@@ -81,16 +86,11 @@ namespace xEventLogger
 
         public string GetLogFile(string fileName)
         {
-            try
-            {
-                if (Validation.StringIsNullOrEmpty(fileName))
-                    throw new Exception("The given filepath is null or empty");
-                return FileWriter.ReadTextFromFile($"{directory}/{fileName}");
-            }
-            catch
-            {
-                throw;
-            }
+
+            if (Validation.StringIsNullOrEmpty(fileName))
+                throw new Exception("The given filepath is null or empty");
+
+            return FileWriter.ReadTextFromFile($"{directory}/{fileName}");
         }
 
         public async Task<string> GetLogFileAsync(string fileName)
